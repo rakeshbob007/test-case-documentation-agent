@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "testcase-agent-ui",
+      "runtimeExecutable": "C:\\Users\\rakesh.kodigandla\\AppData\\Local\\Python\\bin\\python.exe",
+      "runtimeArgs": ["-m", "streamlit", "run", "app.py", "--server.headless", "true"],
+      "port": 8501
+    }
+  ]
+}

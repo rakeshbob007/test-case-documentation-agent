@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Screen Recorder</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&display=swap');
+  html, body {
+    font-family: 'JetBrains Mono', monospace;
+    background: transparent;
+    color: #0F172A;
+    margin: 0;
+    height: 100vh;
+  }
+  h1 { color: #0EA968; font-size: 0.95rem; margin: 0 0 0.5rem 0; letter-spacing: 0.02em; }
+  .panel {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    width: 260px;
+    border: 1px solid #E2E8F0;
+    border-left: 4px solid #0EA968;
+    border-radius: 8px;
+    padding: 0.9rem 1rem;
+    text-align: left;
+    background: #FFFFFF;
+    box-shadow: 0 6px 24px rgba(15,23,42,0.16);
+    cursor: move;
+    user-select: none;
+  }
+  p { color: #334155; font-size: 0.72rem; line-height: 1.35; margin: 0 0 0.6rem 0; }
+  .controls { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+  button {
+    font-family: inherit;
+    font-size: 0.78rem;
+    padding: 0.4rem 0.7rem;
+    border-radius: 6px;
+    border: 1px solid #CBD5E1;
+    cursor: pointer;
+    background: #F6F8FA;
+  }
+  button.primary {
+    background: linear-gradient(135deg, #0EA968, #0284C7);
+    color: white;
+    border: none;
+    font-weight: 700;
+  }
+  button:disabled { opacity: 0.4; cursor: not-allowed; }
+  #status {
+    margin-top: 0.6rem;
+    color: #334155;
+    font-size: 0.68rem;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+  #dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #CBD5E1; flex-shrink: 0;
+  }
+  #dot.live { background: #E11D48; animation: pulse 1.2s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
+  .meta {
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px dashed #E2E8F0;
+    font-size: 0.64rem;
+    color: #64748B;
+    word-break: break-all;
+  }
+  .meta div { margin-bottom: 0.15rem; }
+  video {
+    margin-top: 0.6rem;
+    width: 100%;
+    border-radius: 6px;
+    border: 1px solid #E2E8F0;
+    display: none;
+  }
+</style>
+</head>
+<body>
+  <div class="panel" id="panel">
+    <h1>&gt; SCREEN_RECORDER_</h1>
+    <p>Record your workflow. Stop uploads it automatically and sends you
+    back to the Test Case Agent.</p>
+    <div class="controls">
+      <button id="startBtn" class="primary">Start</button>
+      <button id="pauseBtn" disabled>Pause</button>
+      <button id="stopBtn" disabled>Stop</button>
+    </div>
+    <div id="status"><span id="dot"></span><span id="statusText">Idle</span></div>
+    <video id="preview" autoplay muted></video>
+    <div class="meta">
+      <div id="saveDirLine"></div>
+      <div id="targetUrlLine"></div>
+    </div>
+  </div>
+
+<script>
+let mediaRecorder;
+let chunks = [];
+let stream;
+
+const startBtn = document.getElementById('startBtn');
+const pauseBtn = document.getElementById('pauseBtn');
+const stopBtn = document.getElementById('stopBtn');
+const statusText = document.getElementById('statusText');
+const dot = document.getElementById('dot');
+const preview = document.getElementById('preview');
+preview.style.display = 'none';
+
+const params = new URLSearchParams(window.location.search);
+const saveDir = params.get('save_dir') || '';
+const targetUrl = params.get('target_url') || '';
+document.getElementById('saveDirLine').textContent = saveDir ? ('Saving to: ' + saveDir) : '';
+document.getElementById('targetUrlLine').textContent = targetUrl ? ('Target: ' + targetUrl) : '';
+
+function setStatus(text, live) {
+  statusText.textContent = text;
+  dot.classList.toggle('live', !!live);
+}
+
+function pickMimeType() {
+  const candidates = ['video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm'];
+  return candidates.find(t => window.MediaRecorder && MediaRecorder.isTypeSupported(t)) || '';
+}
+
+startBtn.onclick = async () => {
+  try {
+    stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
+  } catch (e) {
+    setStatus('Cancelled or permission denied.', false);
+    return;
+  }
+  chunks = [];
+  const mimeType = pickMimeType();
+  mediaRecorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
+  mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
+  mediaRecorder.onstop = async () => {
+    setStatus('Uploading...', false);
+    const blob = new Blob(chunks, { type: mimeType || 'video/webm' });
+    try {
+      const uploadUrl = '/upload?save_dir=' + encodeURIComponent(saveDir);
+      const res = await fetch(uploadUrl, { method: 'POST', body: blob });
+      if (res.ok) {
+        setStatus('Uploaded. Returning...', false);
+        setTimeout(() => { window.location.href = 'http://localhost:8501'; }, 900);
+      } else {
+        setStatus('Upload failed (server ' + res.status + ').', false);
+      }
+    } catch (err) {
+      setStatus('Upload failed: ' + err, false);
+    }
+    stream.getTracks().forEach(t => t.stop());
+  };
+  stream.getVideoTracks()[0].addEventListener('ended', () => {
+    if (mediaRecorder.state !== 'inactive') mediaRecorder.stop();
+  });
+  mediaRecorder.start(1000);
+  preview.srcObject = stream;
+  preview.style.display = 'block';
+  setStatus('Recording...', true);
+  startBtn.disabled = true;
+  pauseBtn.disabled = false;
+  stopBtn.disabled = false;
+};
+
+pauseBtn.onclick = () => {
+  if (mediaRecorder.state === 'recording') {
+    mediaRecorder.pause();
+    pauseBtn.textContent = 'Resume';
+    setStatus('Paused.', false);
+  } else if (mediaRecorder.state === 'paused') {
+    mediaRecorder.resume();
+    pauseBtn.textContent = 'Pause';
+    setStatus('Recording...', true);
+  }
+};
+
+stopBtn.onclick = () => {
+  if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+    mediaRecorder.stop();
+  }
+  startBtn.disabled = true;
+  pauseBtn.disabled = true;
+  stopBtn.disabled = true;
+};
+
+// Let the floating panel be dragged anywhere on screen (drag from
+// anywhere except the buttons themselves).
+(() => {
+  const panel = document.getElementById('panel');
+  let dragging = false, offsetX = 0, offsetY = 0;
+  panel.addEventListener('mousedown', (e) => {
+    if (e.target.tagName === 'BUTTON') return;
+    dragging = true;
+    offsetX = e.clientX - panel.getBoundingClientRect().left;
+    offsetY = e.clientY - panel.getBoundingClientRect().top;
+  });
+  window.addEventListener('mousemove', (e) => {
+    if (!dragging) return;
+    panel.style.left = Math.max(0, e.clientX - offsetX) + 'px';
+    panel.style.top = Math.max(0, e.clientY - offsetY) + 'px';
+    panel.style.right = 'auto';
+  });
+  window.addEventListener('mouseup', () => { dragging = false; });
+})();
+</script>
+</body>
+</html>
