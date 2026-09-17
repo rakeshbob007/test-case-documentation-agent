@@ -10,6 +10,7 @@ __pycache__/
 
 # Debug/diagnostic artifacts
 claude_debug.log
+*_debug.log
 
 # OS cruft
 Thumbs.db

@@ -15,9 +15,13 @@ one, and backs each expected result with a real screenshot as evidence.
   acted on.
 - **Built-in screen recorder** - a "Record" button opens a small floating
   control panel plus your target page in a new tab, so you can log in first,
-  then record. The finished recording is picked up automatically.
+  then record. The finished recording is picked up automatically, no page
+  refresh needed.
 - Optional JIRA ID label, optional reference `.docx` template to match, and
-  a progress bar during generation.
+  a progress bar during generation that ends in a success message and a
+  download button for the finished document.
+- A polished, animated terminal-style UI (typing hero prompt, pulsing status
+  glow, scanning dividers) - just visual polish, no functional effect.
 
 ## Prerequisites
 
@@ -28,7 +32,8 @@ one, and backs each expected result with a real screenshot as evidence.
 ## Setup
 
 ```bash
-# 1. Install Node dependencies (installs the Claude Code CLI and docx locally)
+# 1. Install Node dependencies (installs the Claude Code CLI, the local
+#    Playwright MCP server, and docx)
 npm install
 
 # 2. Log the local Claude Code CLI into your account
@@ -40,6 +45,12 @@ pip install -r requirements.txt
 # 4. Install the headless browser used for Manual Step Guide mode
 npx playwright install chromium
 ```
+
+> **Playwright MCP stays pinned:** Manual Step Guide mode runs the
+> `@playwright/mcp` package installed by step 1 directly (no `npx ...@latest`),
+> so every generation skips a network round-trip to the npm registry. Update
+> it deliberately with `npm update @playwright/mcp` rather than it changing
+> underneath you on every run.
 
 > **Windows Store Python note:** if `python`/`pip` on your PATH resolve to
 > the sandboxed Microsoft Store Python, it can silently fail to see files

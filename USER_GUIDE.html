@@ -1,0 +1,345 @@
+<title>Agent User Guide</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+:root {
+  --ink: #0F172A;
+  --ink-soft: #334155;
+  --muted: #64748B;
+  --paper: #F7F9FB;
+  --surface: #FFFFFF;
+  --line: #E2E8F0;
+  --accent: #0284C7;
+  --accent-2: #0EA968;
+  --accent-soft: #E7F2FA;
+  --code-bg: #0F172A;
+  --code-fg: #E2E8F0;
+  --shadow: 0 1px 2px rgba(15,23,42,0.04), 0 8px 24px rgba(15,23,42,0.06);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ink: #E7ECF3;
+    --ink-soft: #C7D0DC;
+    --muted: #93A2B8;
+    --paper: #0B1220;
+    --surface: #111A2C;
+    --line: #22304A;
+    --accent: #4CB6F0;
+    --accent-2: #29D98C;
+    --accent-soft: #0F2438;
+    --code-bg: #060B14;
+    --code-fg: #D7E4F5;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+  }
+}
+:root[data-theme="dark"] {
+  --ink: #E7ECF3;
+  --ink-soft: #C7D0DC;
+  --muted: #93A2B8;
+  --paper: #0B1220;
+  --surface: #111A2C;
+  --line: #22304A;
+  --accent: #4CB6F0;
+  --accent-2: #29D98C;
+  --accent-soft: #0F2438;
+  --code-bg: #060B14;
+  --code-fg: #D7E4F5;
+  --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 16px;
+  line-height: 1.65;
+  padding: 0 16px;
+}
+.wrap { max-width: 900px; margin: 0 auto; padding-block: 2.5rem 4rem; }
+
+.eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.6rem;
+}
+.eyebrow .num {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-radius: 4px;
+  padding: 0.1rem 0.45rem;
+}
+
+h1, h2, h3 { font-family: 'Fraunces', serif; color: var(--ink); text-wrap: balance; }
+h1 { font-size: clamp(2rem, 5vw, 2.9rem); font-weight: 600; margin: 0 0 0.5rem; line-height: 1.1; }
+h2 { font-size: clamp(1.4rem, 3vw, 1.8rem); font-weight: 600; margin: 0 0 1rem; }
+h3 { font-size: 1.08rem; font-weight: 600; margin: 1.5rem 0 0.6rem; color: var(--accent); }
+p { margin: 0 0 1rem; color: var(--ink-soft); }
+a { color: var(--accent); }
+strong { color: var(--ink); }
+code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85em;
+  background: var(--accent-soft);
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+}
+
+.hero { border-bottom: 1px solid var(--line); padding-bottom: 2rem; margin-bottom: 2.5rem; }
+.hero p.lede { font-size: 1.08rem; max-width: 62ch; }
+.meta-row { display: flex; flex-wrap: wrap; gap: 0.7rem; margin-top: 1.2rem; }
+.pill {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink-soft);
+  border-radius: 999px;
+  padding: 0.35rem 0.8rem;
+  text-decoration: none;
+}
+.pill.accent { border-color: var(--accent); color: var(--accent); }
+
+.part-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 2.2rem;
+  border-bottom: 1px solid var(--line);
+}
+.part-tabs a {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.82rem;
+  text-decoration: none;
+  color: var(--muted);
+  padding: 0.6rem 0.2rem;
+  border-bottom: 2px solid transparent;
+}
+.part-tabs a:nth-child(1) { color: var(--accent); border-color: var(--accent); }
+.part-tabs a:nth-child(2) { color: var(--accent-2); }
+
+section { margin-bottom: 3rem; scroll-margin-top: 1rem; }
+
+.steps { list-style: none; padding: 0; margin: 0; counter-reset: step; }
+.steps > li {
+  counter-increment: step;
+  position: relative;
+  padding: 0 0 1.4rem 2.6rem;
+  border-left: 2px solid var(--line);
+  margin-left: 0.9rem;
+}
+.steps > li:last-child { border-color: transparent; padding-bottom: 0; }
+.steps > li::before {
+  content: counter(step);
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  font-size: 0.82rem;
+  position: absolute;
+  left: -0.95rem;
+  top: 0;
+  width: 1.9rem; height: 1.9rem;
+  background: var(--surface);
+  border: 2px solid var(--accent);
+  color: var(--accent);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+}
+.steps h4 { margin: 0 0 0.4rem; font-family: 'IBM Plex Sans', sans-serif; font-weight: 600; font-size: 1rem; color: var(--ink); }
+
+pre {
+  background: var(--code-bg);
+  color: var(--code-fg);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  padding: 0.9rem 1.1rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 0.6rem 0 1rem;
+}
+
+.note {
+  border-left: 3px solid var(--accent-2);
+  background: var(--accent-soft);
+  border-radius: 0 8px 8px 0;
+  padding: 0.85rem 1.1rem;
+  font-size: 0.92rem;
+  color: var(--ink-soft);
+  margin: 1rem 0;
+}
+.note strong { color: var(--ink); }
+
+.mode-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.2rem; margin: 1rem 0 1.5rem; }
+.mode-card { border: 1px solid var(--line); background: var(--surface); border-radius: 12px; padding: 1.2rem 1.3rem; box-shadow: var(--shadow); }
+.mode-card h4 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  color: var(--accent);
+  margin: 0 0 0.6rem;
+}
+.mode-card ol { padding-left: 1.1rem; font-size: 0.92rem; }
+.mode-card li { margin-bottom: 0.4rem; }
+
+footer {
+  border-top: 1px solid var(--line);
+  margin-top: 2rem;
+  padding-top: 1.3rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+</style>
+
+<div class="wrap">
+
+  <header class="hero">
+    <div class="eyebrow">USER GUIDE</div>
+    <h1>Getting the Agent Running</h1>
+    <p class="lede">Everything needed to go from a fresh clone to a
+    finished test case document — environment setup, then the full
+    functional walkthrough of the app.</p>
+    <div class="meta-row">
+      <a class="pill accent" href="https://github.com/rakeshbob007/test-case-documentation-agent">↗ github.com/rakeshbob007/test-case-documentation-agent</a>
+      <span class="pill">Windows + PowerShell</span>
+      <span class="pill">Python 3.10+</span>
+      <span class="pill">Node.js</span>
+    </div>
+  </header>
+
+  <div class="part-tabs">
+    <a href="#setup">Part 1 — Environment setup</a>
+    <a href="#flow">Part 2 — Functional flow</a>
+  </div>
+
+  <section id="setup">
+    <div class="eyebrow"><span class="num">I</span> Clone → running app</div>
+    <h2>Part 1 — Environment setup</h2>
+
+    <ol class="steps">
+      <li>
+        <h4>Clone the repository</h4>
+        <pre>git clone https://github.com/rakeshbob007/test-case-documentation-agent.git
+cd test-case-documentation-agent</pre>
+      </li>
+      <li>
+        <h4>Install Node dependencies</h4>
+        <p>Installs the Claude Code CLI and the Playwright MCP server
+        <em>locally</em> to the project (not globally, and not via
+        <code>npx ...@latest</code>) — avoids Windows PATH and
+        corporate-security issues with the global npm install location, and
+        skips a network round-trip on every generation.</p>
+        <pre>npm install</pre>
+      </li>
+      <li>
+        <h4>Log the local Claude Code CLI into your account</h4>
+        <pre>.\node_modules\@anthropic-ai\claude-code\bin\claude.exe auth login</pre>
+        <p>Follow the browser login prompt that opens.</p>
+      </li>
+      <li>
+        <h4>Install Python dependencies</h4>
+        <pre>pip install -r requirements.txt</pre>
+        <div class="note"><strong>Windows Store Python warning:</strong> if
+        plain <code>python</code>/<code>pip</code> on PATH resolve to the
+        sandboxed Microsoft Store Python, it can silently fail to see files
+        outside a few whitelisted folders — including the Claude CLI itself.
+        If you hit "claude CLI not found" later, locate your real Python
+        install (commonly
+        <code>C:\Users\&lt;you&gt;\AppData\Local\Python\bin\python.exe</code>)
+        and use that explicitly.</div>
+      </li>
+      <li>
+        <h4>Install the headless browser (Manual Step Guide mode)</h4>
+        <pre>npx playwright install chromium</pre>
+      </li>
+      <li>
+        <h4>Point the launcher at your Python install</h4>
+        <p>Open <code>run_app.ps1</code> and confirm <code>$py</code> matches
+        your real (non-sandboxed) Python executable:</p>
+        <pre>$py = "C:\Users\&lt;you&gt;\AppData\Local\Python\bin\python.exe"
+&amp; $py -m streamlit run "$PSScriptRoot\app.py"</pre>
+      </li>
+      <li>
+        <h4>Open the main page</h4>
+        <pre>powershell -ExecutionPolicy Bypass -File run_app.ps1</pre>
+        <p>Starts the Streamlit server and opens
+        <strong>http://localhost:8501</strong> — the main page of the agent.</p>
+      </li>
+    </ol>
+  </section>
+
+  <section id="flow">
+    <div class="eyebrow"><span class="num">II</span> Using the app</div>
+    <h2>Part 2 — Functional flow</h2>
+    <p>The main page walks through three numbered steps, plus a Generate action.</p>
+
+    <h3>Step 1 — Task details</h3>
+    <p><strong>JIRA ID (optional):</strong> a text label (e.g.
+    <code>PROJ-1234</code>) stamped onto the generated document — no live
+    JIRA connection is made.</p>
+    <p><strong>Reference template (optional, .docx):</strong> upload your
+    team's existing test case template. If provided, Claude reproduces its
+    exact table structure and headers, only filling in new content;
+    otherwise a clean standard table is generated (Test Case ID, Title,
+    Preconditions, Test Steps, Test Data, Expected Result, Priority).</p>
+
+    <h3>Step 2 — Workflow source</h3>
+    <div class="mode-grid">
+      <div class="mode-card">
+        <h4>A · Video Upload</h4>
+        <ol>
+          <li>Upload a recording (mp4/mov/avi/mkv/webm), <strong>or</strong> click <strong>🔴 Record</strong>.</li>
+          <li>Record popup (now a wide dialog): enter a save folder on its own full-width line + target URL, click <strong>Proceed</strong> — the target page and a floating recorder panel open.</li>
+          <li>Log in / navigate, click <strong>Start</strong>, use Pause/Resume as needed, then <strong>Stop</strong>.</li>
+          <li>Recording uploads automatically; close that tab and switch back.</li>
+          <li>Main page auto-detects the finished recording within ~2 seconds — no manual refresh. <strong>Discard</strong> to re-record.</li>
+          <li>Adjust <strong>max frames</strong> (5–40) — more frames catch more detail but take longer.</li>
+        </ol>
+      </div>
+      <div class="mode-card">
+        <h4>B · Manual Step Guide</h4>
+        <ol>
+          <li>Type the workflow in plain English, one instruction per line.</li>
+          <li>Choose <strong>Headless</strong> (fast, invisible) or <strong>Headed</strong> (visible, watch it run live).</li>
+          <li>Claude drives a real Playwright browser through your instructions, highlights the element each step acts on, and screenshots it as evidence.</li>
+        </ol>
+      </div>
+    </div>
+    <p><strong>Additional guidelines (either mode):</strong> free-text extras
+    layered on top, e.g. "also cover mobile viewport sizes."</p>
+    <p><strong>Test case scope:</strong> step-by-step functional only, or
+    functional + edge/negative cases.</p>
+
+    <h3>Step 3 — Save location</h3>
+    <p>Click <strong>Browse...</strong> for a native folder picker, or type
+    the destination path directly. <strong>Generate</strong> stays disabled
+    until both a workflow source and an output folder are set — and pulses
+    gently once it's ready to go.</p>
+
+    <h3>Generate</h3>
+    <p>A progress bar tracks the run while, under the hood, the app extracts
+    frames (or drives the live browser), builds a detailed prompt (template
+    + JIRA ID + guidelines + scope), runs the local Claude Code CLI
+    headlessly, and Claude writes the test cases — embedding the single most
+    relevant image into each Expected Result cell, auto-resized, switching
+    to landscape if needed to avoid overflow — then saves the final
+    <code>.docx</code> to your chosen folder.</p>
+    <div class="note">When it finishes, the progress bar reaches "Done" and a
+    green success message plus a <strong>Download the generated
+    document</strong> button appear right on the main page — the file is
+    also already sitting in the output folder you selected, ready to attach
+    to JIRA or send to the customer.</div>
+  </section>
+
+  <footer>
+    <span>Test Case Documentation Agent — User Guide</span>
+    <span>Rakesh Yadav Kodigandla · Senior Specialist · Bristlecone</span>
+  </footer>
+
+</div>

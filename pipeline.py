@@ -95,11 +95,21 @@ def extract_frames(video_path: str, out_dir: Path, max_frames: int = 15) -> list
 
 def write_mcp_config(run_dir: Path, headless: bool) -> Path:
     """Write a per-run MCP config enabling the Playwright browser tools,
-    in headed or headless mode as chosen by the user."""
-    args = ["-y", "@playwright/mcp@latest"]
+    in headed or headless mode as chosen by the user.
+
+    Runs the locally-installed @playwright/mcp package directly (via its
+    cli.js) instead of `npx ...@latest` - the latter re-resolves the
+    package against the npm registry on every single generation, which
+    adds a real, avoidable network round-trip each time. The local copy is
+    a real project dependency (see package.json); update it deliberately
+    with `npm update @playwright/mcp` rather than picking up whatever is
+    newest on every run."""
+    cli_js = Path(__file__).parent / "node_modules" / "@playwright" / "mcp" / "cli.js"
+    node_exe = shutil.which("node") or "node"
+    args = [str(cli_js)]
     if headless:
         args.append("--headless")
-    config = {"mcpServers": {"playwright": {"command": "npx", "args": args}}}
+    config = {"mcpServers": {"playwright": {"command": node_exe, "args": args}}}
     path = run_dir / "mcp_config.json"
     path.write_text(json.dumps(config, indent=2), encoding="utf-8")
     return path

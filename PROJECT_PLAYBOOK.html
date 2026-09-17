@@ -1,0 +1,432 @@
+<title>Agent Playbook</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+:root {
+  --ink: #0F172A;
+  --ink-soft: #334155;
+  --muted: #64748B;
+  --paper: #F7F9FB;
+  --surface: #FFFFFF;
+  --line: #E2E8F0;
+  --accent: #0EA968;
+  --accent-2: #0284C7;
+  --accent-soft: #E7F6EE;
+  --code-bg: #0F172A;
+  --code-fg: #E2E8F0;
+  --shadow: 0 1px 2px rgba(15,23,42,0.04), 0 8px 24px rgba(15,23,42,0.06);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ink: #E7ECF3;
+    --ink-soft: #C7D0DC;
+    --muted: #93A2B8;
+    --paper: #0B1220;
+    --surface: #111A2C;
+    --line: #22304A;
+    --accent: #29D98C;
+    --accent-2: #4CB6F0;
+    --accent-soft: #10281F;
+    --code-bg: #060B14;
+    --code-fg: #D7E4F5;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+  }
+}
+:root[data-theme="dark"] {
+  --ink: #E7ECF3;
+  --ink-soft: #C7D0DC;
+  --muted: #93A2B8;
+  --paper: #0B1220;
+  --surface: #111A2C;
+  --line: #22304A;
+  --accent: #29D98C;
+  --accent-2: #4CB6F0;
+  --accent-soft: #10281F;
+  --code-bg: #060B14;
+  --code-fg: #D7E4F5;
+  --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 16px;
+  line-height: 1.65;
+  padding: 0 16px;
+}
+.wrap { max-width: 900px; margin: 0 auto; padding-block: 2.5rem 4rem; }
+
+.eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.6rem;
+}
+.eyebrow .num {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-radius: 4px;
+  padding: 0.1rem 0.45rem;
+}
+
+h1, h2, h3 { font-family: 'Fraunces', serif; color: var(--ink); text-wrap: balance; }
+h1 { font-size: clamp(2rem, 5vw, 2.9rem); font-weight: 600; margin: 0 0 0.5rem; line-height: 1.1; }
+h2 { font-size: clamp(1.4rem, 3vw, 1.8rem); font-weight: 600; margin: 0 0 1rem; }
+h3 { font-size: 1.1rem; font-weight: 600; margin: 1.4rem 0 0.6rem; }
+p { margin: 0 0 1rem; color: var(--ink-soft); }
+a { color: var(--accent-2); }
+strong { color: var(--ink); }
+
+.hero {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 2rem;
+  margin-bottom: 2.5rem;
+}
+.hero p.lede { font-size: 1.08rem; max-width: 60ch; }
+.meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin-top: 1.2rem;
+}
+.pill {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink-soft);
+  border-radius: 999px;
+  padding: 0.35rem 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  text-decoration: none;
+}
+.pill.accent { border-color: var(--accent); color: var(--accent); }
+
+nav.toc {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 0.9rem 1.1rem;
+  margin-bottom: 2.8rem;
+  box-shadow: var(--shadow);
+}
+nav.toc a { color: var(--ink-soft); text-decoration: none; white-space: nowrap; }
+nav.toc a:hover { color: var(--accent); }
+
+section { margin-bottom: 3.2rem; scroll-margin-top: 1rem; }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 1.3rem 1.5rem;
+  box-shadow: var(--shadow);
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.9rem;
+  margin: 1.2rem 0;
+}
+.stat {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0.9rem 1rem;
+}
+.stat .n {
+  font-family: 'JetBrains Mono', monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--accent);
+  display: block;
+}
+.stat .l { font-size: 0.78rem; color: var(--muted); }
+
+.note {
+  border-left: 3px solid var(--accent-2);
+  background: var(--accent-soft);
+  border-radius: 0 8px 8px 0;
+  padding: 0.85rem 1.1rem;
+  font-size: 0.92rem;
+  color: var(--ink-soft);
+  margin: 1rem 0;
+}
+
+table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; }
+th, td { text-align: left; padding: 0.7rem 0.9rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+thead th {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: var(--paper);
+}
+tbody tr:last-child td { border-bottom: none; }
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+}
+.feature {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: 10px;
+  padding: 1rem 1.15rem;
+}
+.feature h4 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  color: var(--accent);
+  margin: 0 0 0.35rem;
+}
+.feature p { font-size: 0.9rem; margin: 0; }
+
+.credit {
+  display: flex;
+  gap: 1.3rem;
+  align-items: center;
+  background: linear-gradient(135deg, var(--accent-soft), transparent);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 1.4rem 1.6rem;
+}
+.credit .avatar {
+  width: 56px; height: 56px; flex-shrink: 0;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-family: 'Fraunces', serif; font-weight: 600; font-size: 1.4rem;
+}
+.credit .name { font-family: 'Fraunces', serif; font-size: 1.15rem; font-weight: 600; color: var(--ink); }
+.credit .role { font-size: 0.85rem; color: var(--muted); }
+.credit .skills { margin-top: 0.4rem; display: flex; gap: 0.4rem; flex-wrap: wrap; }
+.credit .skills span {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  color: var(--ink-soft);
+}
+
+footer {
+  border-top: 1px solid var(--line);
+  margin-top: 2rem;
+  padding-top: 1.3rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.mermaid { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 1rem; }
+
+@media (max-width: 640px) {
+  .credit { flex-direction: column; align-items: flex-start; text-align: left; }
+}
+</style>
+
+<div class="wrap">
+
+  <header class="hero">
+    <div class="eyebrow">PROJECT PLAYBOOK</div>
+    <h1>Test Case Documentation Agent</h1>
+    <p class="lede">A local, zero-license-cost agent that turns a demonstrated
+    workflow into a formal, client-ready Word test case document — powered
+    end to end by Claude Code.</p>
+    <div class="meta-row">
+      <a class="pill accent" href="https://github.com/rakeshbob007/test-case-documentation-agent">↗ github.com/rakeshbob007/test-case-documentation-agent</a>
+      <span class="pill">Rakesh Yadav Kodigandla</span>
+      <span class="pill">Senior Specialist · Bristlecone</span>
+    </div>
+  </header>
+
+  <nav class="toc">
+    <a href="#overview">01 Overview</a>
+    <a href="#design">02 System design</a>
+    <a href="#tokens">03 Token cost</a>
+    <a href="#advantages">04 Advantages</a>
+    <a href="#features">05 Features</a>
+    <a href="#credits">06 Credits</a>
+    <a href="#developer">07 Developer</a>
+  </nav>
+
+  <section id="overview">
+    <div class="eyebrow"><span class="num">01</span> Complete overview</div>
+    <h2>What this agent does</h2>
+    <p>The <strong>Test Case Documentation Agent</strong> is a self-hosted tool
+    that converts a demonstrated application workflow — either a screen
+    recording or a plain-English step guide — into a formal, client-ready
+    Word (<code>.docx</code>) test case document.</p>
+    <p>Instead of a QA engineer manually watching a workflow, writing steps,
+    taking screenshots, cropping/pasting them into a table, and formatting a
+    document by hand, this agent automates the entire chain:</p>
+    <div class="feature-grid">
+      <div class="feature"><h4>1. Capture</h4><p>Upload a video, record one in-app, or type the steps in plain English.</p></div>
+      <div class="feature"><h4>2. Understand</h4><p>Claude reads the video frames, or drives a real browser through the typed steps itself.</p></div>
+      <div class="feature"><h4>3. Author</h4><p>Functional test cases, or functional + edge/negative cases.</p></div>
+      <div class="feature"><h4>4. Produce</h4><p>A Word document matching the QA team's own template, with real screenshots as evidence.</p></div>
+    </div>
+    <p style="margin-top:1rem">It runs entirely on the user's own machine
+    using the user's own Claude subscription — no server, no SaaS fee, and no
+    workflow data leaves the laptop except the Claude API calls themselves.</p>
+  </section>
+
+  <section id="design">
+    <div class="eyebrow"><span class="num">02</span> System design</div>
+    <h2>Architecture</h2>
+    <pre class="mermaid">
+flowchart TD
+    UI["Streamlit UI (app.py)<br/>JIRA ID · template upload<br/>workflow source · save location"]
+    UI --> VIDEO["Video Upload mode<br/>imageio-ffmpeg frame extraction"]
+    UI --> MANUAL["Manual Step Guide mode<br/>Playwright MCP browser automation"]
+    UI --> REC["Built-in Recorder<br/>recorder_server.py + recorder.html"]
+    REC -. "LAST_SAVED_POINTER file<br/>(auto-polled every 2s)" .-> VIDEO
+    VIDEO --> PIPE["pipeline.py<br/>build_prompt · write_mcp_config<br/>run_claude_streaming"]
+    MANUAL --> PIPE
+    PIPE --> CLI["Claude Code CLI (headless)<br/>local claude.exe · --dangerously-skip-permissions"]
+    CLI --> DOC["Final .docx test case document<br/>screenshots embedded per Expected Result"]
+    </pre>
+    <h3>Key design decisions</h3>
+    <ul>
+      <li><strong>Local-first, no server</strong> — Streamlit on <code>localhost:8501</code> plus a small local HTTP server for the recorder.</li>
+      <li><strong>Claude Code as the reasoning + authoring engine</strong>, invoked headlessly via a project-local native <code>claude.exe</code> binary — sidesteps Windows PATH/shim and corporate-security restrictions on the global npm install location.</li>
+      <li><strong>Two capture paths, one prompt builder</strong> — video frames or a live Playwright session both feed <code>pipeline.build_prompt()</code>. Playwright runs via a locally-pinned <code>@playwright/mcp</code> dependency (not <code>npx ...@latest</code>), so no registry round-trip on every generation.</li>
+      <li><strong>Template-matching</strong> — Claude replicates an uploaded reference <code>.docx</code>'s exact structure, or falls back to a clean standard table.</li>
+      <li><strong>Built-in recorder</strong> — a floating control panel using the browser's native <code>MediaRecorder</code>/<code>getDisplayMedia</code> APIs, handed off to the main app via a polled pointer file.</li>
+    </ul>
+  </section>
+
+  <section id="tokens">
+    <div class="eyebrow"><span class="num">03</span> Token cost</div>
+    <h2>Tokens used to build this setup</h2>
+    <p>Exact cumulative spend across the entire multi-session build isn't
+    retained as a single number — Claude Code doesn't total usage across
+    sessions with automatic compaction in between. The one figure that is
+    directly measurable is this session's own live usage:</p>
+    <div class="stat-grid">
+      <div class="stat"><span class="n">~79.3K</span><span class="l">tokens used, this session</span></div>
+      <div class="stat"><span class="n">8%</span><span class="l">of a 1M-token context window</span></div>
+      <div class="stat"><span class="n">35%</span><span class="l">5-hour usage window consumed</span></div>
+      <div class="stat"><span class="n">23%</span><span class="l">weekly usage window consumed</span></div>
+    </div>
+    <div class="note">Given the number of prior sessions this project went
+    through — scaffolding, the video pipeline, Playwright/Manual Step Guide
+    integration, the built-in recorder, several rounds of UI polish, the
+    GitHub push tooling, and this documentation pass — a reasonable order of
+    magnitude for the <strong>full build</strong> is the <strong>low
+    hundreds of thousands of tokens</strong>. Treat that as an estimate, not
+    a metered figure.</div>
+  </section>
+
+  <section id="advantages">
+    <div class="eyebrow"><span class="num">04</span> Advantages</div>
+    <h2>Manual authoring vs. this agent</h2>
+    <p style="font-size:0.85rem">Manual-side figures reflect real-world,
+    live-project experience — swap in your own team's actuals as you track
+    more generations.</p>
+    <div class="stat-grid">
+      <div class="stat"><span class="n">4–8 hrs</span><span class="l">manual, real-world (half–1 full day)</span></div>
+      <div class="stat"><span class="n">5–10 min</span><span class="l">with this agent</span></div>
+      <div class="stat"><span class="n">95–99%</span><span class="l">time saved</span></div>
+      <div class="stat"><span class="n">~3.8–7.8 hrs</span><span class="l">saved per document</span></div>
+    </div>
+    <p style="font-size:0.9rem">That manual half-day-to-full-day covers
+    replaying/studying the workflow, writing each step, capturing and
+    placing screenshots, formatting into the team's template, and review —
+    all of it collapses into one ~5–10 minute generation run with this
+    agent.</p>
+    <div class="note"><strong>Cost angle:</strong> at a loaded QA rate of
+    roughly $25–$40/hr, ~4–8 hrs saved per document ≈ <strong>$100–$320
+    saved per document</strong>. At ~20 documents/month, that's
+    <strong>~$2,000–$6,400/month, ~$24,000–$76,800/year</strong> in
+    reclaimed engineer time — against <strong>$0 licensing cost</strong>.</div>
+    <h3>Non-monetary advantages</h3>
+    <ul>
+      <li>Consistent formatting every time — no per-engineer style drift.</li>
+      <li>Evidence screenshots are never forgotten or mismatched to the wrong step.</li>
+      <li>Frees QA engineers for test <em>design</em> and exploratory testing.</li>
+      <li>Fully private/local — no workflow data leaves the machine except calls to Claude itself.</li>
+    </ul>
+  </section>
+
+  <section id="features">
+    <div class="eyebrow"><span class="num">05</span> Features</div>
+    <h2>Complete features, end to end</h2>
+    <div class="feature-grid">
+      <div class="feature"><h4>JIRA ID (optional)</h4><p>Stamped into the generated document as a label/ID prefix. No live JIRA connection required.</p></div>
+      <div class="feature"><h4>Reference template upload</h4><p>Claude replicates the uploaded <code>.docx</code>'s exact structure and headers, only filling in content.</p></div>
+      <div class="feature"><h4>Video Upload mode</h4><p>mp4/mov/avi/mkv/webm supported; adjustable 5–40 sampled frames.</p></div>
+      <div class="feature"><h4>Manual Step Guide mode</h4><p>Claude drives a real Playwright browser, highlighting and screenshotting each interacted element. Headless or headed.</p></div>
+      <div class="feature"><h4>Built-in screen recorder</h4><p>Floating Start/Pause/Stop panel; finished recording auto-populates the main page within seconds.</p></div>
+      <div class="feature"><h4>Additional guidelines</h4><p>Free-text instructions layered on top of either workflow source.</p></div>
+      <div class="feature"><h4>Test case scope control</h4><p>Functional-only, or functional + edge/negative cases.</p></div>
+      <div class="feature"><h4>Output folder picker</h4><p>Native OS folder-browse dialog (runs in its own isolated process for reliability) or manual path entry, validated before generation.</p></div>
+      <div class="feature"><h4>Live progress bar</h4><p>Streams progress from the underlying headless Claude Code CLI run, ending in a success message and a download button.</p></div>
+      <div class="feature"><h4>Automatic image fitting</h4><p>Screenshots resized to fit table cells; document auto-switches to landscape if needed.</p></div>
+      <div class="feature"><h4>Polished terminal-style UI</h4><p>A live-typing hero prompt, a pulsing status glow, and scanning section dividers.</p></div>
+    </div>
+  </section>
+
+  <section id="credits">
+    <div class="eyebrow"><span class="num">06</span> Credits</div>
+    <h2>Designed &amp; built by</h2>
+    <div class="credit">
+      <div class="avatar">RK</div>
+      <div>
+        <div class="name">Rakesh Yadav Kodigandla</div>
+        <div class="role">Senior Specialist · Bristlecone · QA Engineer, 6.5+ years experience</div>
+        <p style="margin:0.5rem 0 0; font-size:0.9rem">Built end-to-end using
+        Python, Playwright browser automation, Streamlit, and Claude Code —
+        applying hands-on QA domain expertise to shape the prompt design,
+        workflow-capture UX, and template-matching logic that make the
+        generated documents production-ready.</p>
+        <div class="skills"><span>Python</span><span>Playwright</span><span>Streamlit</span><span>Claude Code</span><span>QA Engineering</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="developer">
+    <div class="eyebrow"><span class="num">07</span> Developer details</div>
+    <h2>Contact &amp; repository</h2>
+    <div class="table-wrap">
+      <table>
+        <tbody>
+          <tr><td>Name</td><td>Rakesh Yadav Kodigandla</td></tr>
+          <tr><td>Title</td><td>Senior Specialist</td></tr>
+          <tr><td>Organization</td><td>Bristlecone</td></tr>
+          <tr><td>Repository</td><td><a href="https://github.com/rakeshbob007/test-case-documentation-agent">github.com/rakeshbob007/test-case-documentation-agent</a></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>
+    <span>Test Case Documentation Agent — Project Playbook</span>
+    <span>Rakesh Yadav Kodigandla · Bristlecone</span>
+  </footer>
+
+</div>
