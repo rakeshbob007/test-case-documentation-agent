@@ -1,0 +1,16 @@
+# Dependencies (regenerate with: npm install)
+node_modules/
+
+# Runtime data - user recordings, uploaded files, generated documents
+.runs/
+
+# Python
+__pycache__/
+*.pyc
+
+# Debug/diagnostic artifacts
+claude_debug.log
+
+# OS cruft
+Thumbs.db
+.DS_Store
